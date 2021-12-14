@@ -68,53 +68,52 @@ type HTTPServer struct {
 	httpSrv     *http.Server
 	middlewares []web.Handler
 
-	PluginContextProvider     *plugincontext.Provider
-	RouteRegister             routing.RouteRegister
-	Bus                       bus.Bus
-	RenderService             rendering.Service
-	Cfg                       *setting.Cfg
-	SettingsProvider          setting.Provider
-	HooksService              *hooks.HooksService
-	CacheService              *localcache.CacheService
-	DataSourceCache           datasources.CacheService
-	AuthTokenService          models.UserTokenService
-	QuotaService              *quota.QuotaService
-	RemoteCacheService        *remotecache.RemoteCache
-	ProvisioningService       provisioning.ProvisioningService
-	Login                     login.Service
-	License                   models.Licensing
-	AccessControl             accesscontrol.AccessControl
-	DataProxy                 *datasourceproxy.DataSourceProxyService
-	PluginRequestValidator    models.PluginRequestValidator
-	pluginClient              plugins.Client
-	pluginStore               plugins.Store
-	pluginDashboardManager    plugins.PluginDashboardManager
-	pluginStaticRouteResolver plugins.StaticRouteResolver
-	pluginErrorResolver       plugins.ErrorResolver
-	SearchService             *search.SearchService
-	ShortURLService           shorturls.Service
-	Live                      *live.GrafanaLive
-	LivePushGateway           *pushhttp.Gateway
-	ContextHandler            *contexthandler.ContextHandler
-	SQLStore                  *sqlstore.SQLStore
-	AlertEngine               *alerting.AlertEngine
-	LoadSchemaService         *schemaloader.SchemaLoaderService
-	AlertNG                   *ngalert.AlertNG
-	LibraryPanelService       librarypanels.Service
-	LibraryElementService     libraryelements.Service
-	notificationService       *notifications.NotificationService
-	SocialService             social.Service
-	OAuthTokenService         oauthtoken.OAuthTokenService
-	Listener                  net.Listener
-	EncryptionService         encryption.Internal
-	SecretsService            secrets.Service
-	DataSourcesService        *datasources.Service
-	cleanUpService            *cleanup.CleanUpService
-	tracingService            tracing.Tracer
-	internalMetricsSvc        *metrics.InternalMetricsService
-	updateChecker             *updatechecker.Service
-	searchUsersService        searchusers.Service
-	expressionService         *expr.Service
+	PluginContextProvider  *plugincontext.Provider
+	RouteRegister          routing.RouteRegister
+	Bus                    bus.Bus
+	RenderService          rendering.Service
+	Cfg                    *setting.Cfg
+	SettingsProvider       setting.Provider
+	HooksService           *hooks.HooksService
+	CacheService           *localcache.CacheService
+	DataSourceCache        datasources.CacheService
+	AuthTokenService       models.UserTokenService
+	QuotaService           *quota.QuotaService
+	RemoteCacheService     *remotecache.RemoteCache
+	ProvisioningService    provisioning.ProvisioningService
+	Login                  login.Service
+	License                models.Licensing
+	AccessControl          accesscontrol.AccessControl
+	DataProxy              *datasourceproxy.DataSourceProxyService
+	PluginRequestValidator models.PluginRequestValidator
+	pluginClient           plugins.Client
+	pluginStore            plugins.Store
+	pluginDashboardManager plugins.PluginDashboardManager
+	pluginErrorResolver    plugins.ErrorResolver
+	SearchService          *search.SearchService
+	ShortURLService        shorturls.Service
+	Live                   *live.GrafanaLive
+	LivePushGateway        *pushhttp.Gateway
+	ContextHandler         *contexthandler.ContextHandler
+	SQLStore               *sqlstore.SQLStore
+	AlertEngine            *alerting.AlertEngine
+	LoadSchemaService      *schemaloader.SchemaLoaderService
+	AlertNG                *ngalert.AlertNG
+	LibraryPanelService    librarypanels.Service
+	LibraryElementService  libraryelements.Service
+	notificationService    *notifications.NotificationService
+	SocialService          social.Service
+	OAuthTokenService      oauthtoken.OAuthTokenService
+	Listener               net.Listener
+	EncryptionService      encryption.Internal
+	SecretsService         secrets.Service
+	DataSourcesService     *datasources.Service
+	cleanUpService         *cleanup.CleanUpService
+	tracingService         tracing.Tracer
+	internalMetricsSvc     *metrics.InternalMetricsService
+	updateChecker          *updatechecker.Service
+	searchUsersService     searchusers.Service
+	expressionService      *expr.Service
 }
 
 type ServerOptions struct {
@@ -124,8 +123,8 @@ type ServerOptions struct {
 func ProvideHTTPServer(opts ServerOptions, cfg *setting.Cfg, routeRegister routing.RouteRegister, bus bus.Bus,
 	renderService rendering.Service, licensing models.Licensing, hooksService *hooks.HooksService,
 	cacheService *localcache.CacheService, sqlStore *sqlstore.SQLStore, alertEngine *alerting.AlertEngine,
-	pluginRequestValidator models.PluginRequestValidator, pluginStaticRouteResolver plugins.StaticRouteResolver,
-	pluginDashboardManager plugins.PluginDashboardManager, pluginStore plugins.Store, pluginClient plugins.Client,
+	pluginRequestValidator models.PluginRequestValidator, pluginDashboardManager plugins.PluginDashboardManager,
+	pluginStore plugins.Store, pluginClient plugins.Client,
 	pluginErrorResolver plugins.ErrorResolver, settingsProvider setting.Provider,
 	dataSourceCache datasources.CacheService, userTokenService models.UserTokenService,
 	cleanUpService *cleanup.CleanUpService, shortURLService shorturls.Service,
@@ -145,55 +144,54 @@ func ProvideHTTPServer(opts ServerOptions, cfg *setting.Cfg, routeRegister routi
 	m := web.New()
 
 	hs := &HTTPServer{
-		Cfg:                       cfg,
-		RouteRegister:             routeRegister,
-		Bus:                       bus,
-		RenderService:             renderService,
-		License:                   licensing,
-		HooksService:              hooksService,
-		CacheService:              cacheService,
-		SQLStore:                  sqlStore,
-		AlertEngine:               alertEngine,
-		PluginRequestValidator:    pluginRequestValidator,
-		pluginClient:              pluginClient,
-		pluginStore:               pluginStore,
-		pluginStaticRouteResolver: pluginStaticRouteResolver,
-		pluginDashboardManager:    pluginDashboardManager,
-		pluginErrorResolver:       pluginErrorResolver,
-		updateChecker:             updateChecker,
-		SettingsProvider:          settingsProvider,
-		DataSourceCache:           dataSourceCache,
-		AuthTokenService:          userTokenService,
-		cleanUpService:            cleanUpService,
-		ShortURLService:           shortURLService,
-		RemoteCacheService:        remoteCache,
-		ProvisioningService:       provisioningService,
-		Login:                     loginService,
-		AccessControl:             accessControl,
-		DataProxy:                 dataSourceProxy,
-		SearchService:             searchService,
-		Live:                      live,
-		LivePushGateway:           livePushGateway,
-		PluginContextProvider:     plugCtxProvider,
-		ContextHandler:            contextHandler,
-		LoadSchemaService:         schemaService,
-		AlertNG:                   alertNG,
-		LibraryPanelService:       libraryPanelService,
-		LibraryElementService:     libraryElementService,
-		QuotaService:              quotaService,
-		notificationService:       notificationService,
-		tracingService:            tracingService,
-		internalMetricsSvc:        internalMetricsSvc,
-		log:                       log.New("http.server"),
-		web:                       m,
-		Listener:                  opts.Listener,
-		SocialService:             socialService,
-		OAuthTokenService:         oauthTokenService,
-		EncryptionService:         encryptionService,
-		SecretsService:            secretsService,
-		DataSourcesService:        dataSourcesService,
-		searchUsersService:        searchUsersService,
-		expressionService:         expressionService,
+		Cfg:                    cfg,
+		RouteRegister:          routeRegister,
+		Bus:                    bus,
+		RenderService:          renderService,
+		License:                licensing,
+		HooksService:           hooksService,
+		CacheService:           cacheService,
+		SQLStore:               sqlStore,
+		AlertEngine:            alertEngine,
+		PluginRequestValidator: pluginRequestValidator,
+		pluginClient:           pluginClient,
+		pluginStore:            pluginStore,
+		pluginDashboardManager: pluginDashboardManager,
+		pluginErrorResolver:    pluginErrorResolver,
+		updateChecker:          updateChecker,
+		SettingsProvider:       settingsProvider,
+		DataSourceCache:        dataSourceCache,
+		AuthTokenService:       userTokenService,
+		cleanUpService:         cleanUpService,
+		ShortURLService:        shortURLService,
+		RemoteCacheService:     remoteCache,
+		ProvisioningService:    provisioningService,
+		Login:                  loginService,
+		AccessControl:          accessControl,
+		DataProxy:              dataSourceProxy,
+		SearchService:          searchService,
+		Live:                   live,
+		LivePushGateway:        livePushGateway,
+		PluginContextProvider:  plugCtxProvider,
+		ContextHandler:         contextHandler,
+		LoadSchemaService:      schemaService,
+		AlertNG:                alertNG,
+		LibraryPanelService:    libraryPanelService,
+		LibraryElementService:  libraryElementService,
+		QuotaService:           quotaService,
+		notificationService:    notificationService,
+		tracingService:         tracingService,
+		internalMetricsSvc:     internalMetricsSvc,
+		log:                    log.New("http.server"),
+		web:                    m,
+		Listener:               opts.Listener,
+		SocialService:          socialService,
+		OAuthTokenService:      oauthTokenService,
+		EncryptionService:      encryptionService,
+		SecretsService:         secretsService,
+		DataSourcesService:     dataSourcesService,
+		searchUsersService:     searchUsersService,
+		expressionService:      expressionService,
 	}
 	if hs.Listener != nil {
 		hs.log.Debug("Using provided listener")

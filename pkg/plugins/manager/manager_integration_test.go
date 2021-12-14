@@ -3,7 +3,6 @@ package manager
 import (
 	"context"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/grafana/grafana/pkg/plugins"
@@ -138,31 +137,23 @@ func verifyCorePluginCatalogue(t *testing.T, pm *PluginManager) {
 func verifyBundledPlugins(t *testing.T, pm *PluginManager) {
 	t.Helper()
 
+	inputPlugin, exists := pm.Plugin(context.Background(), "input")
+	require.True(t, exists)
+	require.NotEqual(t, plugins.PluginDTO{}, inputPlugin)
+
 	dsPlugins := make(map[string]struct{})
 	for _, p := range pm.Plugins(context.Background(), plugins.DataSource) {
 		dsPlugins[p.ID] = struct{}{}
 	}
-
-	pluginRoutes := make(map[string]*plugins.StaticRoute)
-	for _, r := range pm.Routes() {
-		pluginRoutes[r.PluginID] = r
-	}
-
-	inputPlugin, exists := pm.Plugin(context.Background(), "input")
-	require.NotEqual(t, plugins.PluginDTO{}, inputPlugin)
-	assert.True(t, exists)
 	assert.NotNil(t, dsPlugins["input"])
-
-	for _, pluginID := range []string{"input"} {
-		assert.Contains(t, pluginRoutes, pluginID)
-		assert.True(t, strings.HasPrefix(pluginRoutes[pluginID].Directory, inputPlugin.PluginDir))
-	}
 }
 
 func verifyPluginStaticRoutes(t *testing.T, pm *PluginManager) {
 	routes := make(map[string]*plugins.StaticRoute)
-	for _, route := range pm.Routes() {
-		routes[route.PluginID] = route
+	for _, p := range pm.Plugins(context.Background()) {
+		if p.StaticRoute() != nil {
+			routes[p.ID] = p.StaticRoute()
+		}
 	}
 
 	assert.Len(t, routes, 2)

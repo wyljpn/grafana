@@ -80,7 +80,7 @@ func (p PluginDTO) SupportsStreaming() bool {
 }
 
 func (p PluginDTO) IsApp() bool {
-	return p.Type == "app"
+	return p.Type == App
 }
 
 func (p PluginDTO) IsCorePlugin() bool {
@@ -102,6 +102,14 @@ func (p PluginDTO) IncludedInSignature(file string) bool {
 		return false
 	}
 	return true
+}
+
+func (p PluginDTO) StaticRoute() *StaticRoute {
+	if p.IsCorePlugin() {
+		return nil
+	}
+
+	return &StaticRoute{Directory: p.PluginDir, PluginID: p.ID}
 }
 
 // JSONData represents the plugin's plugin.json
@@ -332,14 +340,6 @@ func (p *Plugin) ToDTO() PluginDTO {
 		BaseURL:             p.BaseURL,
 		StreamHandler:       c,
 	}
-}
-
-func (p *Plugin) StaticRoute() *StaticRoute {
-	if p.IsCorePlugin() {
-		return nil
-	}
-
-	return &StaticRoute{Directory: p.PluginDir, PluginID: p.ID}
 }
 
 func (p *Plugin) IsRenderer() bool {

@@ -70,10 +70,6 @@ type RendererManager interface {
 	Renderer() *Plugin
 }
 
-type StaticRouteResolver interface {
-	Routes() []*StaticRoute
-}
-
 type ErrorResolver interface {
 	PluginErrors() []*Error
 }

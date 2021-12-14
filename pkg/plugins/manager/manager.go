@@ -31,7 +31,6 @@ const (
 var _ plugins.Client = (*PluginManager)(nil)
 var _ plugins.Store = (*PluginManager)(nil)
 var _ plugins.PluginDashboardManager = (*PluginManager)(nil)
-var _ plugins.StaticRouteResolver = (*PluginManager)(nil)
 var _ plugins.RendererManager = (*PluginManager)(nil)
 
 type PluginManager struct {
@@ -355,17 +354,6 @@ func (m *PluginManager) isRegistered(pluginID string) bool {
 	}
 
 	return !p.IsDecommissioned()
-}
-
-func (m *PluginManager) Routes() []*plugins.StaticRoute {
-	staticRoutes := make([]*plugins.StaticRoute, 0)
-
-	for _, p := range m.plugins() {
-		if p.StaticRoute() != nil {
-			staticRoutes = append(staticRoutes, p.StaticRoute())
-		}
-	}
-	return staticRoutes
 }
 
 func (m *PluginManager) registerAndStart(ctx context.Context, plugin *plugins.Plugin) error {

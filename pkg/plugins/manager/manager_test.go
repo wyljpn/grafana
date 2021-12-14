@@ -181,10 +181,6 @@ func TestPluginManager_Installer(t *testing.T) {
 
 		verifyNoPluginErrors(t, pm)
 
-		assert.Len(t, pm.Routes(), 1)
-		assert.Equal(t, p.ID, pm.Routes()[0].PluginID)
-		assert.Equal(t, p.PluginDir, pm.Routes()[0].Directory)
-
 		assert.Equal(t, 1, pc.startCount)
 		assert.Equal(t, 0, pc.stopCount)
 		assert.False(t, pc.exited)
@@ -238,7 +234,7 @@ func TestPluginManager_Installer(t *testing.T) {
 			p, exists := pm.Plugin(context.Background(), p.ID)
 			assert.False(t, exists)
 			assert.Equal(t, plugins.PluginDTO{}, p)
-			assert.Len(t, pm.Routes(), 0)
+			assert.Len(t, pm.Plugins(context.Background()), 0)
 
 			t.Run("Won't uninstall if not installed", func(t *testing.T) {
 				err := pm.Remove(context.Background(), p.ID)

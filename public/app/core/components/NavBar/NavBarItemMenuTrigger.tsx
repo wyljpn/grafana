@@ -5,12 +5,13 @@ import { GrafanaTheme2, NavModelItem } from '@grafana/data';
 import { MenuTriggerProps } from '@react-types/menu';
 import { useMenuTriggerState } from '@react-stately/menu';
 import { useMenuTrigger } from '@react-aria/menu';
-import { useFocusVisible, useFocusWithin, useHover, useKeyboard } from '@react-aria/interactions';
+import { useFocusWithin, useHover, useKeyboard } from '@react-aria/interactions';
 import { useButton } from '@react-aria/button';
 import { DismissButton, useOverlay } from '@react-aria/overlays';
 import { FocusScope } from '@react-aria/focus';
 
 import { NavBarItemMenuContext } from './context';
+import { NavFeatureHighlight } from './NavFeatureHighlight';
 
 export interface NavBarItemMenuTriggerProps extends MenuTriggerProps {
   children: ReactElement;
@@ -29,11 +30,8 @@ export function NavBarItemMenuTrigger(props: NavBarItemMenuTriggerProps): ReactE
   const state = useMenuTriggerState({ ...rest });
 
   // Get props for the menu trigger and menu elements
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLButtonElement>(null);
   const { menuTriggerProps, menuProps } = useMenuTrigger({}, state, ref);
-
-  // style to the focused menu item
-  let { isFocusVisible } = useFocusVisible({ isTextInput: false });
 
   const { hoverProps } = useHover({
     onHoverChange: (isHovering) => {
@@ -47,7 +45,7 @@ export function NavBarItemMenuTrigger(props: NavBarItemMenuTriggerProps): ReactE
 
   const { focusWithinProps } = useFocusWithin({
     onFocusWithinChange: (isFocused) => {
-      if (isFocused && isFocusVisible) {
+      if (isFocused) {
         state.open();
       }
       if (!isFocused) {
@@ -75,6 +73,12 @@ export function NavBarItemMenuTrigger(props: NavBarItemMenuTriggerProps): ReactE
   // Get props for the button based on the trigger props from useMenuTrigger
   const { buttonProps } = useButton(menuTriggerProps, ref);
 
+  const buttonContent = (
+    <span className={styles.icon}>
+      {item?.icon && <Icon name={item.icon as IconName} size="xl" />}
+      {item?.img && <img src={item.img} alt={`${item.text} logo`} />}
+    </span>
+  );
   let element = (
     <button
       className={styles.element}
@@ -84,10 +88,7 @@ export function NavBarItemMenuTrigger(props: NavBarItemMenuTriggerProps): ReactE
       onClick={item?.onClick}
       aria-label={label}
     >
-      <span className={styles.icon}>
-        {item?.icon && <Icon name={item.icon as IconName} size="xl" />}
-        {item?.img && <img src={item.img} alt={`${item.text} logo`} />}
-      </span>
+      {item.highlightText ? <NavFeatureHighlight>{buttonContent}</NavFeatureHighlight> : buttonContent}
     </button>
   );
 
@@ -132,7 +133,6 @@ export function NavBarItemMenuTrigger(props: NavBarItemMenuTriggerProps): ReactE
   const { overlayProps } = useOverlay(
     {
       onClose: () => state.close(),
-      shouldCloseOnBlur: true,
       isOpen: state.isOpen,
       isDismissable: true,
     },
@@ -143,7 +143,17 @@ export function NavBarItemMenuTrigger(props: NavBarItemMenuTriggerProps): ReactE
     <div className={cx(styles.element, 'dropdown')} {...focusWithinProps} {...hoverProps}>
       {element}
       {state.isOpen && (
-        <NavBarItemMenuContext.Provider value={{ menuProps, menuHasFocus, onClose: () => state.close() }}>
+        <NavBarItemMenuContext.Provider
+          value={{
+            menuProps,
+            menuHasFocus,
+            onClose: () => state.close(),
+            onLeft: () => {
+              setMenuHasFocus(false);
+              ref.current?.focus();
+            },
+          }}
+        >
           <FocusScope restoreFocus>
             <div {...overlayProps} ref={overlayRef}>
               <DismissButton onDismiss={() => state.close()} />
@@ -158,22 +168,6 @@ export function NavBarItemMenuTrigger(props: NavBarItemMenuTriggerProps): ReactE
 }
 
 const getStyles = (theme: GrafanaTheme2, isActive?: boolean) => ({
-  container: css`
-    position: relative;
-    color: ${isActive ? theme.colors.text.primary : theme.colors.text.secondary};
-    list-style: none;
-
-    &:hover {
-      background-color: ${theme.colors.action.hover};
-      color: ${theme.colors.text.primary};
-
-      // TODO don't use a hardcoded class here, use isVisible in NavBarDropdown
-      .navbar-dropdown {
-        opacity: 1;
-        visibility: visible;
-      }
-    }
-  `,
   element: css`
     background-color: transparent;
     border: none;

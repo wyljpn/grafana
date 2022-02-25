@@ -51,7 +51,7 @@
     "i18n:extract": "lingui extract",
     "i18n:compile": "lingui compile",
     "postinstall": "husky install",
-    "betterer": "betterer"
+    "betterer": "betterer --cache"
   },
   "grafana": {
     "whatsNewUrl": "https://grafana.com/docs/grafana/next/whatsnew/whats-new-in-v8-4/",
@@ -59,7 +59,7 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "betterer precommit",
+      "betterer --cache precommit",
       "eslint --ext .js,.tsx,.ts --cache --fix"
     ],
     "*.{json,scss,md,mdx}": [
@@ -83,6 +83,7 @@
     "@babel/preset-react": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
     "@betterer/cli": "5.1.6",
+    "@betterer/eslint": "5.1.6",
     "@betterer/regexp": "5.1.6",
     "@emotion/eslint-plugin": "11.7.0",
     "@grafana/api-documenter": "7.11.2",

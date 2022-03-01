@@ -16,14 +16,6 @@
       {
         "groups": [["builtin", "external"], "internal", "parent", "sibling", "index"],
         "newlines-between": "always",
-        // "pathGroups": [
-        //   {
-        //     "pattern": "@grafana/**",
-        //     "group": "internal",
-        //     "position": "before"
-        //   }
-        // ],
-        // "pathGroupsExcludedImportTypes": ["builtin"],
         "alphabetize": { "order": "asc" }
       }
     ]

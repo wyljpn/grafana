@@ -3,7 +3,7 @@
   "root": true,
   "plugins": ["@emotion", "lodash", "jest", "import"],
   "settings": {
-    "import/internal-regex": "^app/",
+    "import/internal-regex": "^(app/)|(@grafana)",
     "import/external-module-folders": ["node_modules", ".yarn"]
   },
   "rules": {
@@ -16,14 +16,15 @@
       {
         "groups": [["builtin", "external"], "internal", "parent", "sibling", "index"],
         "newlines-between": "always",
-        "pathGroups": [
-          {
-            "pattern": "@grafana/**",
-            "group": "internal",
-            "position": "before"
-          }
-        ],
-        "pathGroupsExcludedImportTypes": ["builtin"]
+        // "pathGroups": [
+        //   {
+        //     "pattern": "@grafana/**",
+        //     "group": "internal",
+        //     "position": "before"
+        //   }
+        // ],
+        // "pathGroupsExcludedImportTypes": ["builtin"],
+        "alphabetize": { "order": "asc" }
       }
     ]
   },

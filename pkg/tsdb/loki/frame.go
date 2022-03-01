@@ -19,6 +19,13 @@ func adjustFrame(frame *data.Frame, query *lokiQuery) *data.Frame {
 
 	isMetricRange := isMetricFrame && query.QueryType == QueryTypeRange
 
+	// HACK: streams-data currently creates an extra field named "TS"
+	if !isMetricFrame {
+		if len(frame.Fields) == 3 {
+			frame.Fields = frame.Fields[0:2]
+		}
+	}
+
 	name := formatName(labels, query)
 	frame.Name = name
 
@@ -50,6 +57,10 @@ func adjustFrame(frame *data.Frame, query *lokiQuery) *data.Frame {
 		}
 		field.Config.DisplayNameFromDS = name
 	}
+
+	// FIXME: i clear the frame-type here, so that the unit-test-snapshots do not need to be changed yet.
+	// when this is merged, i will remove this and update the snaphsots in a separate PR.
+	frame.Meta.Type = data.FrameTypeUnknown
 
 	return frame
 }

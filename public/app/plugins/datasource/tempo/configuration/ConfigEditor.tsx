@@ -6,6 +6,7 @@ import { ServiceGraphSettings } from './ServiceGraphSettings';
 import { config } from '@grafana/runtime';
 import { SearchSettings } from './SearchSettings';
 import { NodeGraphSettings } from 'app/core/components/NodeGraphSettings';
+import { TraceToMetricsSettings } from 'app/core/components/TraceToMetrics/TraceToMetricsSettings';
 
 export type Props = DataSourcePluginOptionsEditorProps;
 
@@ -22,19 +23,28 @@ export const ConfigEditor: React.FC<Props> = ({ options, onOptionsChange }) => {
       <div className="gf-form-group">
         <TraceToLogsSettings options={options} onOptionsChange={onOptionsChange} />
       </div>
+
       {config.featureToggles.tempoServiceGraph && (
         <div className="gf-form-group">
           <ServiceGraphSettings options={options} onOptionsChange={onOptionsChange} />
         </div>
       )}
+
       {config.featureToggles.tempoSearch && (
         <div className="gf-form-group">
           <SearchSettings options={options} onOptionsChange={onOptionsChange} />
         </div>
       )}
+
       <div className="gf-form-group">
         <NodeGraphSettings options={options} onOptionsChange={onOptionsChange} />
       </div>
+
+      {config.featureToggles.traceToMetrics ? (
+        <div className="gf-form-group">
+          <TraceToMetricsSettings options={options} onOptionsChange={onOptionsChange} />
+        </div>
+      ) : null}
     </>
   );
 };

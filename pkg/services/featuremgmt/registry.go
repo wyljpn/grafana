@@ -168,5 +168,10 @@ var (
 			State:           FeatureStateAlpha,
 			RequiresDevMode: true,
 		},
+		{
+			Name:        "traceToMetrics",
+			Description: "Enable trace to metrics links",
+			State:       FeatureStateAlpha,
+		},
 	}
 )

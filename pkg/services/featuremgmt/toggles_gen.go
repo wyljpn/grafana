@@ -126,4 +126,8 @@ const (
 	// FlagFileStoreApi
 	// Simple API for managing files
 	FlagFileStoreApi = "fileStoreApi"
+
+	// FlagTraceToMetrics
+	// Enable trace to metrics links
+	FlagTraceToMetrics = "traceToMetrics"
 )

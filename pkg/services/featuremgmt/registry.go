@@ -207,5 +207,10 @@ var (
 			State:        FeatureStateBeta,
 			FrontendOnly: true,
 		},
+		{
+			Name:        "commandPalette",
+			Description: "Enable command palette",
+			State:       FeatureStateAlpha,
+		},
 	}
 )

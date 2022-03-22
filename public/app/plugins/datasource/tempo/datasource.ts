@@ -45,6 +45,9 @@ export interface TempoJsonData extends DataSourceJsonData {
     hide?: boolean;
   };
   nodeGraph?: NodeGraphOptions;
+  tracesToMetrics?: {
+    datasourceUid?: string;
+  };
 }
 
 export interface TempoQuery extends DataQuery {

@@ -15,7 +15,7 @@
 import React from 'react';
 import { css } from '@emotion/css';
 import cx from 'classnames';
-import { DataLinkButton, TextArea, useStyles2 } from '@grafana/ui';
+import { TextArea, useStyles2 } from '@grafana/ui';
 import { GrafanaTheme2, LinkModel } from '@grafana/data';
 import IoLink from 'react-icons/lib/io/link';
 
@@ -25,7 +25,7 @@ import AccordianText from './AccordianText';
 import DetailState from './DetailState';
 import { formatDuration } from '../utils';
 import LabeledList from '../../common/LabeledList';
-import { SpanLinkFunc, TNil } from '../../types';
+import { TNil } from '../../types';
 import { TraceKeyValuePair, TraceLink, TraceLog, TraceSpan, TraceSpanReference } from '../../types/trace';
 import AccordianReferences from './AccordianReferences';
 import { autoColor } from '../../Theme';
@@ -114,7 +114,6 @@ type SpanDetailProps = {
   referenceItemToggle: (spanID: string, reference: TraceSpanReference) => void;
   referencesToggle: (spanID: string) => void;
   focusSpan: (uiFind: string) => void;
-  createSpanLink?: SpanLinkFunc;
   focusedSpanId?: string;
   createFocusSpanLink: (traceId: string, spanId: string) => LinkModel;
 };
@@ -134,7 +133,6 @@ export default function SpanDetail(props: SpanDetailProps) {
     referencesToggle,
     referenceItemToggle,
     focusSpan,
-    createSpanLink,
     createFocusSpanLink,
   } = props;
   const {
@@ -185,7 +183,6 @@ export default function SpanDetail(props: SpanDetailProps) {
       : []),
   ];
   const styles = useStyles2(getStyles);
-  const link = createSpanLink?.(span);
   const focusSpanLink = createFocusSpanLink(traceID, spanID);
 
   return (
@@ -196,9 +193,6 @@ export default function SpanDetail(props: SpanDetailProps) {
           <LabeledList className={ubTxRightAlign} divider={true} items={overviewItems} />
         </div>
       </div>
-      {link ? (
-        <DataLinkButton link={{ ...link, title: 'Logs for this span' } as any} buttonProps={{ icon: 'gf-logs' }} />
-      ) : null}
       <Divider className={ubMy1} type={'horizontal'} />
       <div>
         <div>

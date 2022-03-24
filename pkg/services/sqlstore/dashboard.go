@@ -74,6 +74,7 @@ type DashboardSearchProjection struct {
 	FolderSlug  string
 	FolderTitle string
 	SortMeta    int64
+	DsCounter   int64 `xorm:"-"`
 }
 
 func (ss *SQLStore) FindDashboards(ctx context.Context, query *models.FindPersistedDashboardsQuery) ([]DashboardSearchProjection, error) {
@@ -143,7 +144,7 @@ func (ss *SQLStore) FindDashboards(ctx context.Context, query *models.FindPersis
 		page = 1
 	}
 
-	sql, params := sb.ToSQL(limit, page)
+	sql, params := sb.ToSQL(limit, page, searchstore.BuildSelectForSearch)
 
 	err := ss.WithDbSession(ctx, func(dbSession *DBSession) error {
 		return dbSession.SQL(sql, params...).Find(&res)
@@ -151,6 +152,19 @@ func (ss *SQLStore) FindDashboards(ctx context.Context, query *models.FindPersis
 
 	if err != nil {
 		return nil, err
+	}
+
+	if query.RequestCounter {
+		dsCounterRes := make([]*models.DashboardCounter, 0)
+		sb.GroupBy = "GROUP BY folder_uid"
+		sql, params := sb.ToSQL(limit, page, searchstore.BuildSelectForCount)
+
+		err := ss.WithDbSession(ctx, func(dbSession *DBSession) error {
+			return dbSession.SQL(sql, params...).Find(&dsCounterRes)
+		})
+		if err != nil {
+			mergeCounterWithDashboards(&res, dsCounterRes)
+		}
 	}
 
 	return res, nil
@@ -161,10 +175,20 @@ func (ss *SQLStore) SearchDashboards(ctx context.Context, query *models.FindPers
 	if err != nil {
 		return err
 	}
-
 	makeQueryResult(query, res)
 
 	return nil
+}
+
+func mergeCounterWithDashboards(dsFound *[]DashboardSearchProjection, cRes models.CountDashboardsResult) {
+	for _, d := range *dsFound {
+		for _, c := range cRes {
+			if c.Folderid == d.FolderID {
+				d.Count = c.Count
+				break
+			}
+		}
+	}
 }
 
 func getHitType(item DashboardSearchProjection) models.HitType {

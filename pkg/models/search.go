@@ -35,7 +35,15 @@ type FindPersistedDashboardsQuery struct {
 
 	Filters []interface{}
 
-	Result HitList
+	Result         HitList
+	RequestCounter bool
+}
+
+type CountDashboardsResult []*DashboardCounter
+
+type DashboardCounter struct {
+	Folderid int64
+	Count    int64
 }
 
 type HitType string

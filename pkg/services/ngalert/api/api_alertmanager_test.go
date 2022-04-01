@@ -20,6 +20,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/ngalert/metrics"
 	ngmodels "github.com/grafana/grafana/pkg/services/ngalert/models"
 	"github.com/grafana/grafana/pkg/services/ngalert/notifier"
+	"github.com/grafana/grafana/pkg/services/ngalert/services"
 	"github.com/grafana/grafana/pkg/services/secrets/fakes"
 	secretsManager "github.com/grafana/grafana/pkg/services/secrets/manager"
 	"github.com/grafana/grafana/pkg/setting"
@@ -354,7 +355,8 @@ func createSut(t *testing.T, accessControl accesscontrol.AccessControl) Alertman
 	if accessControl == nil {
 		accessControl = acMock.New().WithDisabled()
 	}
-	return AlertmanagerSrv{mam: mam, store: store, secrets: secrets, ac: accessControl}
+	configs := services.NewAlertmanagerConfigService(mam, secrets, store, log.NewNopLogger())
+	return AlertmanagerSrv{mam: mam, store: store, secrets: secrets, ac: accessControl, configs: configs}
 }
 
 func createAmConfigRequest(t *testing.T) apimodels.PostableUserConfig {

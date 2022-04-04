@@ -42,8 +42,8 @@ type FindPersistedDashboardsQuery struct {
 type CountDashboardsResult []*DashboardCounter
 
 type DashboardCounter struct {
-	Folderid int64
-	Count    int64
+	FolderUID string
+	Count     int64
 }
 
 type HitType string

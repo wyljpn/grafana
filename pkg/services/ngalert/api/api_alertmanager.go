@@ -15,7 +15,6 @@ import (
 	"github.com/grafana/grafana/pkg/services/accesscontrol"
 	apimodels "github.com/grafana/grafana/pkg/services/ngalert/api/tooling/definitions"
 	"github.com/grafana/grafana/pkg/services/ngalert/notifier"
-	"github.com/grafana/grafana/pkg/services/ngalert/services"
 	"github.com/grafana/grafana/pkg/services/ngalert/store"
 	"github.com/grafana/grafana/pkg/services/secrets"
 	"github.com/grafana/grafana/pkg/util"
@@ -31,7 +30,7 @@ type AlertmanagerSrv struct {
 	secrets secrets.Service
 	log     log.Logger
 	ac      accesscontrol.AccessControl
-	configs *services.AlertmanagerConfigService
+	configs *notifier.AlertmanagerConfigService
 }
 
 type UnknownReceiverError struct {
@@ -216,11 +215,11 @@ func (srv AlertmanagerSrv) RoutePostAlertingConfig(c *models.ReqContext, body ap
 	if err == nil {
 		return response.JSON(http.StatusAccepted, util.DynMap{"message": "configuration created"})
 	}
-	var unknownReceiverError services.UnknownReceiverError
+	var unknownReceiverError notifier.UnknownReceiverError
 	if errors.As(err, &unknownReceiverError) {
 		return ErrResp(http.StatusBadRequest, unknownReceiverError, "")
 	}
-	var configRejectedError services.AlertmanagerConfigRejectedError
+	var configRejectedError notifier.AlertmanagerConfigRejectedError
 	if errors.As(err, &configRejectedError) {
 		return ErrResp(http.StatusBadRequest, configRejectedError, "")
 	}

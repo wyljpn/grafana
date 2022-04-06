@@ -354,8 +354,9 @@ func createSut(t *testing.T, accessControl accesscontrol.AccessControl) Alertman
 	if accessControl == nil {
 		accessControl = acMock.New().WithDisabled()
 	}
-	configs := notifier.NewAlertmanagerConfigService(mam, secrets, store, log.NewNopLogger())
-	return AlertmanagerSrv{secrets: secrets, ac: accessControl, configs: configs}
+	encryption := notifier.NewEncryption(secrets, store)
+	configs := notifier.NewAlertmanagerConfigService(mam, encryption, store, log.NewNopLogger())
+	return AlertmanagerSrv{encryption: encryption, ac: accessControl, configs: configs}
 }
 
 func createAmConfigRequest(t *testing.T) apimodels.PostableUserConfig {

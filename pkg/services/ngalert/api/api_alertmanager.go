@@ -16,7 +16,6 @@ import (
 	apimodels "github.com/grafana/grafana/pkg/services/ngalert/api/tooling/definitions"
 	"github.com/grafana/grafana/pkg/services/ngalert/notifier"
 	"github.com/grafana/grafana/pkg/services/ngalert/store"
-	"github.com/grafana/grafana/pkg/services/secrets"
 	"github.com/grafana/grafana/pkg/util"
 	"github.com/grafana/grafana/pkg/web"
 )
@@ -27,10 +26,10 @@ const (
 )
 
 type AlertmanagerSrv struct {
-	secrets secrets.Service
-	log     log.Logger
-	ac      accesscontrol.AccessControl
-	configs *notifier.AlertmanagerConfigService
+	log        log.Logger
+	ac         accesscontrol.AccessControl
+	configs    *notifier.AlertmanagerConfigService
+	encryption notifier.Encryption
 }
 
 type UnknownReceiverError struct {
@@ -238,7 +237,7 @@ func (srv AlertmanagerSrv) RoutePostAMAlerts(_ *models.ReqContext, _ apimodels.P
 }
 
 func (srv AlertmanagerSrv) RoutePostTestReceivers(c *models.ReqContext, body apimodels.TestReceiversConfigBodyParams) response.Response {
-	if err := srv.configs.LoadSecureSettings(c.Req.Context(), c.OrgId, body.Receivers); err != nil {
+	if err := srv.encryption.LoadSecureSettings(c.Req.Context(), c.OrgId, body.Receivers); err != nil {
 		var unknownReceiverError UnknownReceiverError
 		if errors.As(err, &unknownReceiverError) {
 			return ErrResp(http.StatusBadRequest, err, "")
@@ -246,7 +245,7 @@ func (srv AlertmanagerSrv) RoutePostTestReceivers(c *models.ReqContext, body api
 		return ErrResp(http.StatusInternalServerError, err, "")
 	}
 
-	if err := body.ProcessConfig(srv.secrets.Encrypt); err != nil {
+	if err := body.ProcessConfig(srv.encryption.Encrypt); err != nil {
 		return ErrResp(http.StatusInternalServerError, err, "failed to post process Alertmanager configuration")
 	}
 

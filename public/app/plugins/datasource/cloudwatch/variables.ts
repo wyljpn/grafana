@@ -87,15 +87,17 @@ export class CloudWatchVariableSupport extends CustomVariableSupport<CloudWatchD
     }));
   }
 
-  async handleDimensionValuesQuery({ namespace, region, dimensionKey, metricName, dimensionFilters }: VariableQuery) {
+  async handleDimensionValuesQuery({ namespace, region, dimensionKey, metricName, valueDimensions }: VariableQuery) {
     if (!dimensionKey || !metricName) {
       return [];
     }
-    var filterJson = {};
-    if (dimensionFilters) {
-      filterJson = JSON.parse(dimensionFilters);
-    }
-    const keys = await this.datasource.getDimensionValues(region, namespace, metricName, dimensionKey, filterJson);
+    const keys = await this.datasource.getDimensionValues(
+      region,
+      namespace,
+      metricName,
+      dimensionKey,
+      valueDimensions ?? {}
+    );
     return keys.map((s: { label: string; value: string }) => ({
       text: s.label,
       value: s.value,
@@ -115,15 +117,11 @@ export class CloudWatchVariableSupport extends CustomVariableSupport<CloudWatchD
     }));
   }
 
-  async handleEc2InstanceAttributeQuery({ region, attributeName, ec2Filters }: VariableQuery) {
+  async handleEc2InstanceAttributeQuery({ region, attributeName, ec2Filters, ec2Dimensions }: VariableQuery) {
     if (!attributeName) {
       return [];
     }
-    var filterJson = {};
-    if (ec2Filters) {
-      filterJson = JSON.parse(ec2Filters);
-    }
-    const values = await this.datasource.getEc2InstanceAttribute(region, attributeName, filterJson);
+    const values = await this.datasource.getEc2InstanceAttribute(region, attributeName, ec2Dimensions ?? {});
     return values.map((s: { label: string; value: string }) => ({
       text: s.label,
       value: s.value,

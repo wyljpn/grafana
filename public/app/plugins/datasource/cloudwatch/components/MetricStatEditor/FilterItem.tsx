@@ -5,18 +5,19 @@ import { GrafanaTheme2, SelectableValue, toOption } from '@grafana/data';
 import { InputGroup, AccessoryButton } from '@grafana/experimental';
 import { Select, stylesFactory, useTheme2 } from '@grafana/ui';
 import { CloudWatchDatasource } from '../../datasource';
-import { CloudWatchMetricsQuery, Dimensions } from '../../types';
+import { Dimensions, DimensionsQuery } from '../../types';
 import { appendTemplateVariables } from '../../utils/utils';
 import { DimensionFilterCondition } from './Dimensions';
 
 export interface Props {
-  query: CloudWatchMetricsQuery;
+  query: DimensionsQuery;
   datasource: CloudWatchDatasource;
   filter: DimensionFilterCondition;
   dimensionKeys: Array<SelectableValue<string>>;
   disableExpressions: boolean;
   onChange: (value: DimensionFilterCondition) => void;
   onDelete: () => void;
+  multi?: boolean;
 }
 
 const wildcardOption = { value: '*', label: '*' };
@@ -37,7 +38,9 @@ export const FilterItem: FunctionComponent<Props> = ({
   disableExpressions,
   onChange,
   onDelete,
+  multi = false,
 }) => {
+  console.log(multi);
   const dimensionsExcludingCurrentKey = useMemo(
     () => excludeCurrentKey(dimensions ?? {}, filter.key),
     [dimensions, filter]
@@ -90,13 +93,14 @@ export const FilterItem: FunctionComponent<Props> = ({
           allowCustomValue
           isLoading={state.loading}
           options={state.value}
+          isMulti={multi}
           onChange={(change) => {
             if (change.value) {
               onChange({ ...filter, value: change.value });
             }
           }}
         />
-        <AccessoryButton aria-label="remove" icon="times" variant="secondary" onClick={onDelete} />
+        <AccessoryButton aria-label="remove" icon="times" variant="secondary" onClick={onDelete} type="button" />
       </InputGroup>
     </div>
   );

@@ -397,7 +397,8 @@
     "@rushstack/rig-package": "0.3.8",
     "@rushstack/ts-command-line": "4.10.7",
     "@storybook/react/webpack": "5.70.0",
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "@grafana/experimental": "portal:/Users/isabellasiu/code/grafana-experimental"
   },
   "workspaces": {
     "packages": [

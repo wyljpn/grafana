@@ -3,15 +3,16 @@ import React, { useMemo, useState } from 'react';
 import { SelectableValue } from '@grafana/data';
 import { EditorList } from '@grafana/experimental';
 import { CloudWatchDatasource } from '../../datasource';
-import { CloudWatchMetricsQuery, Dimensions as DimensionsType } from '../../types';
+import { Dimensions as DimensionsType, DimensionsQuery } from '../../types';
 import { FilterItem } from './FilterItem';
 
 export interface Props {
-  query: CloudWatchMetricsQuery;
+  query: DimensionsQuery;
   onChange: (dimensions: DimensionsType) => void;
   datasource: CloudWatchDatasource;
   dimensionKeys: Array<SelectableValue<string>>;
   disableExpressions: boolean;
+  multiValue?: boolean;
 }
 
 export interface DimensionFilterCondition {
@@ -42,7 +43,14 @@ const filterConditionsToDimensions = (filters: DimensionFilterCondition[]) => {
   }, {});
 };
 
-export const Dimensions: React.FC<Props> = ({ query, datasource, dimensionKeys, disableExpressions, onChange }) => {
+export const Dimensions: React.FC<Props> = ({
+  query,
+  datasource,
+  dimensionKeys,
+  disableExpressions,
+  onChange,
+  multiValue = false,
+}) => {
   const dimensionFilters = useMemo(() => dimensionsToFilterConditions(query.dimensions), [query.dimensions]);
   const [items, setItems] = useState<DimensionFilterCondition[]>(dimensionFilters);
   const onDimensionsChange = (newItems: Array<Partial<DimensionFilterCondition>>) => {
@@ -60,16 +68,17 @@ export const Dimensions: React.FC<Props> = ({ query, datasource, dimensionKeys, 
     <EditorList
       items={items}
       onChange={onDimensionsChange}
-      renderItem={makeRenderFilter(datasource, query, dimensionKeys, disableExpressions)}
+      renderItem={makeRenderFilter(datasource, query, dimensionKeys, disableExpressions, multiValue)}
     />
   );
 };
 
 function makeRenderFilter(
   datasource: CloudWatchDatasource,
-  query: CloudWatchMetricsQuery,
+  query: DimensionsQuery,
   dimensionKeys: Array<SelectableValue<string>>,
-  disableExpressions: boolean
+  disableExpressions: boolean,
+  multiValue = false
 ) {
   function renderFilter(
     item: DimensionFilterCondition,
@@ -85,6 +94,7 @@ function makeRenderFilter(
         disableExpressions={disableExpressions}
         dimensionKeys={dimensionKeys}
         onDelete={onDelete}
+        multi={multiValue}
       />
     );
   }

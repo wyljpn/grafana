@@ -34,6 +34,7 @@ import appEvents from 'app/core/app_events';
 import { AbsoluteTimeEvent } from 'app/types/events';
 import { Unsubscribable } from 'rxjs';
 import { getNodeGraphDataFrames } from 'app/plugins/panel/nodeGraph/utils';
+import { ExploreActions } from './ExploreActions';
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
@@ -340,6 +341,7 @@ export class Explore extends React.PureComponent<Props, ExploreState> {
         autoHeightMin={'100%'}
         scrollRefCallback={(scrollElement) => (this.scrollElement = scrollElement || undefined)}
       >
+        <ExploreActions exploreId={exploreId} />
         <ExploreToolbar
           exploreId={exploreId}
           onChangeTime={this.onChangeTime}

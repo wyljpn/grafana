@@ -58,7 +58,11 @@ var RendererProvider PluginBackendProvider = func(_ context.Context, p *plugins.
 
 var DefaultProvider PluginBackendProvider = func(_ context.Context, p *plugins.Plugin) backendplugin.PluginFactoryFunc {
 	// TODO check for executable
-	return grpcplugin.NewBackendPlugin(p.ID, filepath.Join(p.PluginDir, pluginStartCmd(p.Executable)))
+
+	executablePath := filepath.Join(p.PluginDir, pluginStartCmd(p.Executable))
+	p.Logger().Info("Backend plugin executable path", "path", executablePath)
+
+	return grpcplugin.NewBackendPlugin(p.ID, executablePath)
 }
 
 func pluginStartCmd(executable string) string {

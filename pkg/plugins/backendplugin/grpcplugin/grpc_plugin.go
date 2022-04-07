@@ -3,6 +3,9 @@ package grpcplugin
 import (
 	"context"
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"sync"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -55,7 +58,23 @@ func (p *grpcPlugin) Start(ctx context.Context) error {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
+	p.logger.Info("Attempting to start plugin...")
+
+	pluginDir := filepath.Dir(p.descriptor.executablePath)
+	p.logger.Info("Plugin dir", "path", pluginDir, "exe", p.descriptor.executablePath)
+
+	files, err := ioutil.ReadDir(pluginDir)
+	if err != nil {
+		p.logger.Error("could not read plugin directory", "err", err)
+	}
+
+	for _, f := range files {
+		fmt.Println(f.Name())
+	}
+
 	p.client = p.clientFactory()
+
+	p.logger.Info(fmt.Sprintf("Plugin client dump: %+v", p.client))
 	rpcClient, err := p.client.Client()
 	if err != nil {
 		return err
@@ -80,6 +99,8 @@ func (p *grpcPlugin) Start(ctx context.Context) error {
 	if elevated {
 		p.logger.Warn("Plugin process is running with elevated privileges. This is not recommended")
 	}
+
+	p.logger.Info("Plugin started!")
 
 	return nil
 }

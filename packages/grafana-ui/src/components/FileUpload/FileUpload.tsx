@@ -1,5 +1,6 @@
 import React, { FC, FormEvent, useCallback, useState } from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
+import { selectors } from '@grafana/e2e-selectors';
 import { css, cx } from '@emotion/css';
 import { Icon } from '../index';
 import { useStyles2 } from '../../themes';
@@ -50,7 +51,7 @@ export const FileUpload: FC<Props> = ({
         onChange={onChange}
         multiple={false}
         accept={accept}
-        data-testid="fileUpload"
+        data-testid={selectors.components.FileUpload.inputField}
       />
       <label htmlFor="fileUpload" className={cx(style.labelWrapper, className)}>
         <Icon name="upload" className={style.icon} />
@@ -58,7 +59,11 @@ export const FileUpload: FC<Props> = ({
       </label>
 
       {fileName && (
-        <span aria-label="File name" className={style.fileName} data-testid="fileName">
+        <span
+          aria-label="File name"
+          className={style.fileName}
+          data-testid={selectors.components.FileUpload.fileNameSpan}
+        >
           {trimFileName(fileName)}
         </span>
       )}

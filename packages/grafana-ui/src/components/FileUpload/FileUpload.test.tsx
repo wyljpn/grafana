@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { FileUpload } from './FileUpload';
+import { selectors } from '@grafana/e2e-selectors';
 
 describe('FileUpload', () => {
   it('should render upload button with default text and no file name', () => {
@@ -36,13 +37,13 @@ describe('FileUpload', () => {
     const file = new File(['(⌐□_□)'], testFileName, { type: 'image/png' });
     const onFileUpload = jest.fn();
     const { getByTestId } = render(<FileUpload onFileUpload={onFileUpload} />);
-    let uploader = getByTestId('fileUpload');
+    let uploader = getByTestId(selectors.components.FileUpload.inputField);
     await waitFor(() =>
       fireEvent.change(uploader, {
         target: { files: [file] },
       })
     );
-    let uploaderLabel = getByTestId('fileName');
+    let uploaderLabel = getByTestId(selectors.components.FileUpload.fileNameSpan);
     expect(uploaderLabel).toHaveTextContent(testFileName);
   });
 });

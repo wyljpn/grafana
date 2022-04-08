@@ -11,6 +11,7 @@ import (
 	"github.com/grafana/grafana/pkg/api/response"
 	"github.com/grafana/grafana/pkg/infra/log"
 	"github.com/grafana/grafana/pkg/infra/serverlock"
+	"github.com/grafana/grafana/pkg/infra/usagestats"
 	"github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/services/featuremgmt"
 	"github.com/grafana/grafana/pkg/services/guardian"
@@ -48,6 +49,7 @@ type thumbService struct {
 	store                      sqlstore.Store
 	crawlLockServiceActionName string
 	log                        log.Logger
+	usageStatsService          usagestats.Service
 }
 
 type crawlerScheduleOptions struct {
@@ -60,7 +62,7 @@ type crawlerScheduleOptions struct {
 	themes           []models.Theme
 }
 
-func ProvideService(cfg *setting.Cfg, features featuremgmt.FeatureToggles, lockService *serverlock.ServerLockService, renderService rendering.Service, gl *live.GrafanaLive, store *sqlstore.SQLStore) Service {
+func ProvideService(cfg *setting.Cfg, features featuremgmt.FeatureToggles, lockService *serverlock.ServerLockService, renderService rendering.Service, gl *live.GrafanaLive, store *sqlstore.SQLStore, usageStatsService usagestats.Service) Service {
 	if !features.IsEnabled(featuremgmt.FlagDashboardPreviews) {
 		return &dummyService{}
 	}
@@ -72,7 +74,8 @@ func ProvideService(cfg *setting.Cfg, features featuremgmt.FeatureToggles, lockS
 		UserID:  0,
 		OrgRole: models.ROLE_ADMIN,
 	}
-	return &thumbService{
+	t := &thumbService{
+		usageStatsService:          usageStatsService,
 		renderingService:           renderService,
 		renderer:                   newSimpleCrawler(renderService, gl, thumbnailRepo),
 		thumbnailRepo:              thumbnailRepo,
@@ -92,6 +95,27 @@ func ProvideService(cfg *setting.Cfg, features featuremgmt.FeatureToggles, lockS
 			auth:             authOpts,
 		},
 	}
+
+	t.registerUsageStats()
+	return t
+}
+
+func (hs *thumbService) registerUsageStats() {
+	hs.usageStatsService.RegisterMetricsFunc(func(ctx context.Context) (map[string]interface{}, error) {
+		s := hs.getDashboardPreviewsSetupSettings(ctx)
+
+		stats := make(map[string]interface{})
+
+		if s.SystemRequirements.Met {
+			stats["stats.dashboard_previews.system_req_met.count"] = 1
+		}
+
+		if s.ThumbnailsExist {
+			stats["stats.dashboard_previews.thumbnails_exist.count"] = 1
+		}
+
+		return stats, nil
+	})
 }
 
 func (hs *thumbService) Enabled() bool {
@@ -201,8 +225,12 @@ func (hs *thumbService) GetImage(c *models.ReqContext) {
 }
 
 func (hs *thumbService) GetDashboardPreviewsSetupSettings(c *models.ReqContext) dashboardPreviewsSetupConfig {
+	return hs.getDashboardPreviewsSetupSettings(c.Req.Context())
+}
+
+func (hs *thumbService) getDashboardPreviewsSetupSettings(ctx context.Context) dashboardPreviewsSetupConfig {
 	systemRequirements := hs.getSystemRequirements()
-	thumbnailsExist, err := hs.thumbnailRepo.doThumbnailsExist(c.Req.Context())
+	thumbnailsExist, err := hs.thumbnailRepo.doThumbnailsExist(ctx)
 
 	if err != nil {
 		return dashboardPreviewsSetupConfig{

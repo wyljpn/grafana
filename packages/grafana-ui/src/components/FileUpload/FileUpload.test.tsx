@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import { FileUpload } from './FileUpload';
 
 describe('FileUpload', () => {
@@ -28,5 +29,20 @@ describe('FileUpload', () => {
       },
     });
     expect(wrapper.find({ 'aria-label': 'File name' }).text()).toEqual('longFileName.png');
+  });
+
+  it('should display uploaded file name', async () => {
+    const testFileName = 'grafana.png';
+    const file = new File(['(⌐□_□)'], testFileName, { type: 'image/png' });
+    const onFileUpload = jest.fn();
+    const { getByTestId } = render(<FileUpload onFileUpload={onFileUpload} />);
+    let uploader = getByTestId('fileUpload');
+    await waitFor(() =>
+      fireEvent.change(uploader, {
+        target: { files: [file] },
+      })
+    );
+    let uploaderLabel = getByTestId('fileName');
+    expect(uploaderLabel).toHaveTextContent(testFileName);
   });
 });

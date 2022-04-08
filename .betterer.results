@@ -11,7 +11,7 @@ exports[`no enzyme tests`] = {
     "packages/grafana-ui/src/components/ColorPicker/NamedColorsPalette.test.tsx:1355456933": [
       [1, 31, 13, "RegExp match", "2409514259"]
     ],
-    "packages/grafana-ui/src/components/FileUpload/FileUpload.test.tsx:3101439847": [
+    "packages/grafana-ui/src/components/FileUpload/FileUpload.test.tsx:221215388": [
       [1, 19, 13, "RegExp match", "2409514259"]
     ],
     "packages/grafana-ui/src/components/FormField/FormField.test.tsx:2387359174": [

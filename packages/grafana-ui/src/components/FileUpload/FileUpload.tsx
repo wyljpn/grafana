@@ -83,8 +83,8 @@ const getStyles = (size: ComponentSize) => (theme: GrafanaTheme2) => {
     }),
     labelWrapper: buttonStyles.button,
     icon: buttonStyles.icon,
-    fileName: css`
-      margin-left: ${theme.spacing(0.5)};
-    `,
+    fileName: css({
+      marginLeft: theme.spacing(0.5),
+    }),
   };
 };

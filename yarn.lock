@@ -6256,16 +6256,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/api-extractor@npm:7.19.5":
-  version: 7.19.5
-  resolution: "@microsoft/api-extractor@npm:7.19.5"
+"@microsoft/api-extractor@npm:7.21.2":
+  version: 7.21.2
+  resolution: "@microsoft/api-extractor@npm:7.21.2"
   dependencies:
-    "@microsoft/api-extractor-model": 7.15.4
+    "@microsoft/api-extractor-model": 7.16.1
     "@microsoft/tsdoc": 0.13.2
     "@microsoft/tsdoc-config": ~0.15.2
-    "@rushstack/node-core-library": 3.45.1
-    "@rushstack/rig-package": 0.3.8
-    "@rushstack/ts-command-line": 4.10.7
+    "@rushstack/node-core-library": 3.45.2
+    "@rushstack/rig-package": 0.3.9
+    "@rushstack/ts-command-line": 4.10.8
     colors: ~1.2.1
     lodash: ~4.17.15
     resolve: ~1.17.0
@@ -6274,7 +6274,7 @@ __metadata:
     typescript: ~4.5.2
   bin:
     api-extractor: bin/api-extractor
-  checksum: 96fa1cff560f3e8c86db89389eb7a966657164b29532d0d8973ad5313dd375d1271b1eacec66e6a449b761e79df874be96cf7dd508dc19a5a3bd30c31e5f68aa
+  checksum: b507aa99c3ee2221415ce721066d494e291f047023a5e6dce6e775dbf0cb08cad57092dade029711714c715143bc5cfb9badb9b15974f6bf73feb2340c93e94d
   languageName: node
   linkType: hard
 
@@ -20434,7 +20434,7 @@ __metadata:
     "@lingui/core": 3.13.2
     "@lingui/macro": 3.13.2
     "@lingui/react": 3.13.2
-    "@microsoft/api-extractor": 7.19.5
+    "@microsoft/api-extractor": 7.21.2
     "@opentelemetry/api": 1.1.0
     "@opentelemetry/exporter-collector": 0.25.0
     "@opentelemetry/semantic-conventions": 1.0.1

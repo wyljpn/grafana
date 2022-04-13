@@ -1,5 +1,8 @@
 # Golang build container
-FROM golang:1.12.4
+#FROM golang:1.12.4
+FROM klstg-docker.slb-wartifactory-v.stg.rmn.local/rakuten/rflow/rflow-go:1.12-build-2
+
+RUN apk add gcc musl-dev clang cmake
 
 WORKDIR $GOPATH/src/github.com/grafana/grafana
 
@@ -15,6 +18,8 @@ COPY package.json package.json
 RUN go run build.go build
 
 # Node build container
+# Yulong
+# node:10.14.2 is ok, just use it.
 FROM node:10.14.2
 
 WORKDIR /usr/src/app/
@@ -22,7 +27,7 @@ WORKDIR /usr/src/app/
 COPY package.json yarn.lock ./
 COPY packages packages
 
-RUN yarn install --pure-lockfile --no-progress
+RUN yarn install --pure-lockfile --no-progress --ignore-engines
 
 COPY Gruntfile.js tsconfig.json tslint.json ./
 COPY public public
@@ -33,7 +38,8 @@ ENV NODE_ENV production
 RUN ./node_modules/.bin/grunt build
 
 # Final container
-FROM ubuntu:18.04
+#FROM ubuntu:18.04
+FROM klstg-docker.slb-wartifactory-v.stg.rmn.local/rakuten/rflow/rflow-ubuntu:20.04
 
 LABEL maintainer="Grafana team <hello@grafana.com>"
 

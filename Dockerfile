@@ -1,6 +1,8 @@
 # Golang build container
 #FROM golang:1.12.4
-FROM klstg-docker.slb-wartifactory-v.stg.rmn.local/rakuten/rflow/rflow-go:1.12-build-2
+#FROM klstg-docker.slb-wartifactory-v.stg.rmn.local/rakuten/rflow/rflow-go:1.12-build-2
+FROM klstg-docker.slb-wartifactory-v.stg.rmn.local/rakuten/rflow/rflow-go:1.17.7-build
+#FROM klstg-docker.slb-wartifactory-v.stg.rmn.local/rakuten/rflow/rflow-go:1.18.2-build2
 
 RUN apk add gcc musl-dev clang cmake
 
@@ -8,6 +10,8 @@ WORKDIR $GOPATH/src/github.com/grafana/grafana
 
 COPY go.mod go.sum ./
 COPY vendor vendor
+
+RUN go env -w GO111MODULE=on
 
 RUN go mod verify
 
